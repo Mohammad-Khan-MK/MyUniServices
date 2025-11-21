@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "3776747042",
+    "project_id": "myuniservices",
+    "storage_bucket": "myuniservices.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3776747042:android:888a8bf42b607390cf5c7b",
+        "android_client_info": {
+          "package_name": "com.example.myuniservices"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC4JJA8Fu5BDBgelhk6KI--UWu41KE-Js"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
