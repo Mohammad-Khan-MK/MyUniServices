@@ -1,72 +1,98 @@
 package com.example.myuniservices.ui.theme.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.compose.foundation.clickable
-
+import com.example.myuniservices.auth.AuthHelper
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavController) {
 
-    // This will store the user's typed email and password
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-        Text(text = "Login", modifier = Modifier.padding(bottom = 20.dp))
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Login button (for now only goes to home)
-        Button(
-            onClick = {
-                navController.navigate("home")
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Login")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Go to Register screen
-        Text(
-            text = "Don't have an account? Register",
+        Column(
             modifier = Modifier
-                .padding(top = 8.dp)
-                .clickable {
+                .fillMaxSize()
+                .padding(padding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Text("Welcome Back", Modifier.padding(bottom = 20.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+
+                    scope.launch {
+
+                        if (email.isBlank() || password.isBlank()) {
+                            snackbarHostState.showSnackbar("Please fill all fields")
+                            return@launch
+                        }
+
+                        AuthHelper.loginUser(
+                            email = email,
+                            password = password,
+                            onSuccess = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Login successful!")
+                                }
+                                navController.navigate("home")
+                            },
+                            onError = { message ->
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(message)
+                                }
+                            }
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Login")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Don't have an account? Register",
+                modifier = Modifier.clickable {
                     navController.navigate("register")
                 }
-        )
+            )
+        }
     }
 }
