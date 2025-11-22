@@ -2,10 +2,14 @@ package com.example.myuniservices.ui.theme.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myuniservices.auth.AuthHelper
@@ -19,6 +23,7 @@ fun LoginScreen(navController: NavController) {
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val keyboard = LocalSoftwareKeyboardController.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -48,7 +53,9 @@ fun LoginScreen(navController: NavController) {
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -57,6 +64,9 @@ fun LoginScreen(navController: NavController) {
                 onClick = {
 
                     scope.launch {
+
+                        // Hide keyboard befoere showing snackbar
+                        keyboard?.hide()
 
                         if (email.isBlank() || password.isBlank()) {
                             snackbarHostState.showSnackbar("Please fill all fields")

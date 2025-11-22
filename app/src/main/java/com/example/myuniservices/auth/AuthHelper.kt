@@ -1,6 +1,6 @@
 package com.example.myuniservices.auth
 
-// 1. Import the main FirebaseAuth class
+
 import com.google.firebase.auth.FirebaseAuth
 
 object AuthHelper {
@@ -11,7 +11,7 @@ object AuthHelper {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        // 2. Get the instance directly from the FirebaseAuth class
+
         val auth = FirebaseAuth.getInstance()
 
         auth.createUserWithEmailAndPassword(email, password)

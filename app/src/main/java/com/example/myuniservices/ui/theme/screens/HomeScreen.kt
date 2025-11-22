@@ -21,7 +21,7 @@ fun HomeScreen(navController: NavController) {
     val db = Firebase.firestore
     val user = Firebase.auth.currentUser
 
-    // The name we'll show in UI
+
     var userName by remember { mutableStateOf("Loading...") }
 
     LaunchedEffect(Unit) {
@@ -29,7 +29,7 @@ fun HomeScreen(navController: NavController) {
 
             val docRef = db.collection("users").document(currentUser.uid)
 
-            // Read Firestore data
+
             docRef.get().addOnSuccessListener { snapshot ->
 
                 if (snapshot.exists()) {
@@ -55,7 +55,7 @@ fun HomeScreen(navController: NavController) {
             .padding(24.dp)
     ) {
 
-        // Top Row with title and profile link
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

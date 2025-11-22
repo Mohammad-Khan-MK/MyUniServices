@@ -16,7 +16,7 @@ fun AppNavigation(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = "login" // first screen
+        startDestination = "login"
     ) {
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }

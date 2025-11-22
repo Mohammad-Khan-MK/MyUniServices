@@ -2,10 +2,14 @@ package com.example.myuniservices.ui.theme.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myuniservices.auth.AuthHelper
@@ -13,7 +17,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +28,7 @@ fun RegisterScreen(navController: NavController) {
     var confirmPassword by remember { mutableStateOf("") }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboard = LocalSoftwareKeyboardController.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -63,7 +67,9 @@ fun RegisterScreen(navController: NavController) {
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -72,7 +78,9 @@ fun RegisterScreen(navController: NavController) {
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
                 label = { Text("Confirm Password") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -83,6 +91,9 @@ fun RegisterScreen(navController: NavController) {
                 onClick = {
 
                     scope.launch {
+
+
+                        keyboard?.hide()
 
                         if (fullName.isBlank() || email.isBlank() ||
                             password.isBlank() || confirmPassword.isBlank()
@@ -96,13 +107,11 @@ fun RegisterScreen(navController: NavController) {
                             return@launch
                         }
 
-                        // Register using Firebase
                         AuthHelper.registerUser(
                             email = email,
                             password = password,
                             onSuccess = {
 
-                                // Now update Firebase display name
                                 val user = Firebase.auth.currentUser
 
                                 val profileUpdates = userProfileChangeRequest {
@@ -118,7 +127,6 @@ fun RegisterScreen(navController: NavController) {
                                                     "Registration successful!"
                                                 )
                                             }
-                                            // Navigate to Login (correct case)
                                             navController.navigate("login")
                                         }
                                     }
@@ -141,14 +149,13 @@ fun RegisterScreen(navController: NavController) {
             Text(
                 text = "Already have an account? Login here",
                 modifier = Modifier.clickable {
-                    navController.navigate("login") // correct route
+                    navController.navigate("login")
                 }
             )
         }
     }
 }
 
-// Snackbar helper
 suspend fun showMessage(host: SnackbarHostState, message: String) {
     host.showSnackbar(message)
 }

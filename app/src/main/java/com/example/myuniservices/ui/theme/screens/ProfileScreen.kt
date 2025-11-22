@@ -13,12 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth // <-- CORRECT IMPORT
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(navController: NavController) {
 
-    val user = FirebaseAuth.getInstance().currentUser // <-- CORRECT USAGE
+    val user = FirebaseAuth.getInstance().currentUser
 
     var fullName by remember { mutableStateOf(user?.displayName ?: "No name set") }
     var email by remember { mutableStateOf(user?.email ?: "") }
@@ -55,7 +55,7 @@ fun ProfileScreen(navController: NavController) {
 
         Button(
             onClick = {
-                FirebaseAuth.getInstance().signOut() // <-- CORRECT USAGE
+                FirebaseAuth.getInstance().signOut()
                 navController.navigate("login") {
                     popUpTo("home") { inclusive = true }
                 }

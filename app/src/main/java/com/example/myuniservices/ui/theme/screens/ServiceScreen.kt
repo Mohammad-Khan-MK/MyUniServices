@@ -23,15 +23,14 @@ fun ServiceScreen() {
 
     val context = LocalContext.current
 
-    // Build database + repository + ViewModel
+
     val viewModel = createServiceViewModel(context)
 
-    // Load services when screen opens
+
     LaunchedEffect(Unit) {
         viewModel.loadServices()
     }
 
-    // For snackbar messages
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
