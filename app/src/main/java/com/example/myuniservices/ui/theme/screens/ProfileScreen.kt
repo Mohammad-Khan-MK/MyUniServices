@@ -1,3 +1,5 @@
+
+
 package com.example.myuniservices.ui.theme.screens
 
 import androidx.compose.foundation.layout.*
@@ -5,17 +7,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth // <-- CORRECT IMPORT
 
 @Composable
 fun ProfileScreen(navController: NavController) {
 
-    // For now, simple placeholder data (later will come from Firebase)
-    var fullName by remember { mutableStateOf("John Doe") }
-    var email by remember { mutableStateOf("student@example.com") }
+    val user = FirebaseAuth.getInstance().currentUser // <-- CORRECT USAGE
+
+    var fullName by remember { mutableStateOf(user?.displayName ?: "No name set") }
+    var email by remember { mutableStateOf(user?.email ?: "") }
 
     Column(
         modifier = Modifier
@@ -29,28 +35,30 @@ fun ProfileScreen(navController: NavController) {
 
         OutlinedTextField(
             value = fullName,
-            onValueChange = { fullName = it },
+            onValueChange = {},
             label = { Text("Full Name") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = false   // read-only for Sprint 2
+            enabled = false
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {},
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = false   // read-only for Sprint 2
+            enabled = false
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                // For now, logout just goes to Login
-                navController.navigate("login")
+                FirebaseAuth.getInstance().signOut() // <-- CORRECT USAGE
+                navController.navigate("login") {
+                    popUpTo("home") { inclusive = true }
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -58,3 +66,35 @@ fun ProfileScreen(navController: NavController) {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

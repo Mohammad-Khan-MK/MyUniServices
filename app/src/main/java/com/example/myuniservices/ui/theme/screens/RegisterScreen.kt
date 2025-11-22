@@ -9,7 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myuniservices.auth.AuthHelper
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,7 +24,6 @@ fun RegisterScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
-    // Snackbar helper
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -81,7 +84,6 @@ fun RegisterScreen(navController: NavController) {
 
                     scope.launch {
 
-                        // 1. Check empty fields
                         if (fullName.isBlank() || email.isBlank() ||
                             password.isBlank() || confirmPassword.isBlank()
                         ) {
@@ -89,21 +91,37 @@ fun RegisterScreen(navController: NavController) {
                             return@launch
                         }
 
-                        // 2. Check passwords match
                         if (password != confirmPassword) {
                             showMessage(snackbarHostState, "Passwords do not match")
                             return@launch
                         }
 
-                        // 3. Register user using Firebase
+                        // Register using Firebase
                         AuthHelper.registerUser(
                             email = email,
                             password = password,
                             onSuccess = {
-                                scope.launch {
-                                    showMessage(snackbarHostState, "Registration successful!")
+
+                                // Now update Firebase display name
+                                val user = Firebase.auth.currentUser
+
+                                val profileUpdates = userProfileChangeRequest {
+                                    displayName = fullName
                                 }
-                                navController.navigate("login")
+
+                                user?.updateProfile(profileUpdates)
+                                    ?.addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            scope.launch {
+                                                showMessage(
+                                                    snackbarHostState,
+                                                    "Registration successful!"
+                                                )
+                                            }
+                                            // Navigate to Login (correct case)
+                                            navController.navigate("login")
+                                        }
+                                    }
                             },
                             onError = { error ->
                                 scope.launch {
@@ -123,14 +141,14 @@ fun RegisterScreen(navController: NavController) {
             Text(
                 text = "Already have an account? Login here",
                 modifier = Modifier.clickable {
-                    navController.navigate("Login")
+                    navController.navigate("login") // correct route
                 }
             )
         }
     }
 }
 
-// Simple helper function
+// Snackbar helper
 suspend fun showMessage(host: SnackbarHostState, message: String) {
     host.showSnackbar(message)
 }
